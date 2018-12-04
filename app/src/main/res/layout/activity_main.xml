@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.onecm.radarview.MainActivity">
+    tools:context="com.xiao.radarview.MainActivity">
 
+    <com.xiao.radarview.widget.RadarView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
