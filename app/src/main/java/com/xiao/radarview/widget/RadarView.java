@@ -28,9 +28,13 @@ public class RadarView extends View {
     private int countCircle = 0;
     private int countAngle = 0;
     private double angle = 0;
+    //起始角度
     private double beginAngle = 0;
+    //数据集
     private double[] datas = {};
+    //网格颜色（多颜色网格线时设置，非必须）
     private int[] colors = {};
+    //标题集
     private String[] titles = {};
 
     private float maxValue = 0;

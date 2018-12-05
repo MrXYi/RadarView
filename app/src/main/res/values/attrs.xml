@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RadarView">
-        <attr name="count_circle" format="integer|reference" />
-        <attr name="count_angle" format="integer|reference" />
-        <attr name="max_value" format="float|reference" />
-        <attr name="radar_color" format="color|reference" />
-        <attr name="text_color" format="color|reference" />
-        <attr name="line_color" format="color|reference" />
-        <attr name="value_color" format="color|reference" />
-        <attr name="text_size" format="dimension|reference" />
-        <attr name="is_full_radar" format="boolean|reference" />
+        <attr name="count_circle" format="integer|reference" /><!--圈数-->
+        <attr name="count_angle" format="integer|reference" /><!--角数-->
+        <attr name="max_value" format="float|reference" /><!--最大值（数据）-->
+        <attr name="radar_color" format="color|reference" /><!--网格边线颜色-->
+        <attr name="text_color" format="color|reference" /><!--文字颜色-->
+        <attr name="line_color" format="color|reference" /><!--网格中线颜色-->
+        <attr name="value_color" format="color|reference" /><!--数据描线颜色-->
+        <attr name="text_size" format="dimension|reference" /><!--文字大小-->
+        <attr name="is_full_radar" format="boolean|reference" /><!--是否填充方式绘制网格-->
     </declare-styleable>
 </resources>

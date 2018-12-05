@@ -37,7 +37,26 @@ radarView.setColors(colors);
 radarView.invalidate();
 ```
 
+**属性**
+
+```html
+<declare-styleable name="RadarView">
+        <attr name="count_circle" format="integer|reference" /><!--圈数-->
+        <attr name="count_angle" format="integer|reference" /><!--角数-->
+        <attr name="max_value" format="float|reference" /><!--最大值（数据）-->
+        <attr name="radar_color" format="color|reference" /><!--网格边线颜色-->
+        <attr name="text_color" format="color|reference" /><!--文字颜色-->
+        <attr name="line_color" format="color|reference" /><!--网格中线颜色-->
+        <attr name="value_color" format="color|reference" /><!--数据描线颜色-->
+        <attr name="text_size" format="dimension|reference" /><!--文字大小-->
+        <attr name="is_full_radar" format="boolean|reference" /><!--是否填充方式绘制网格-->
+</declare-styleable>
+```
 
 
 
 
+
+## 需求
+
+有其他需求、控件有bug时可发邮件到邮箱（xiaoyi.hn@foxmail.com）
