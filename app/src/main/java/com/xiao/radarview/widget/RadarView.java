@@ -2,12 +2,15 @@ package com.xiao.radarview.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.xiao.radarview.R;
 
 /**
  * Created by xy on 2018/12/3.
@@ -16,56 +19,53 @@ import android.view.View;
 public class RadarView extends View {
 
     private Paint radarPaint, textPaint, linePaint, valuePaint;
+    private int radarColor, textColor, lineColor, valueColor;
+    private boolean isFullRadar;
+    private float textSize = 0;
     private float radius;
     private int centerX;
     private int centerY;
-    private int countCircle = 4;
-    private int countAngle = 11;
-    private double angle = (2 * Math.PI) / 11;
-    //    private double beginAngle = Math.PI / 14;
+    private int countCircle = 0;
+    private int countAngle = 0;
+    private double angle = 0;
     private double beginAngle = 0;
-    private double[] data = {2, 4, 2, 3, 3, 4, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    private int[] colors = {0xFF575757, 0xFF888888, 0xFFAEAEAE, 0xFFCECECE};
-    private String[] titles = {"助攻", "物理", "魔法", "防御", "金钱", "击杀", "生存",
-            "测试测测", "测试测测", "测试测测", "测试测测", "测试测测", "测试测测", "测试测测", "测试测测", "测试测测"};
+    private double[] datas = {};
+    private int[] colors = {};
+    private String[] titles = {};
 
-    private float maxValue = 4;
+    private float maxValue = 0;
 
     public RadarView(Context context) {
-        super(context);
-        init();
+        this(context, null);
     }
 
     public RadarView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
+        this(context, attrs, 0);
     }
 
     public RadarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context, attrs, defStyleAttr);
     }
 
 
-    private void init() {
+    private void init(Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.RadarView, defStyleAttr, 0);
+        countCircle = ta.getInteger(R.styleable.RadarView_count_circle, 0);
+        countAngle = ta.getInteger(R.styleable.RadarView_count_angle, 0);
+        angle = 2 * Math.PI / countAngle;
+        maxValue = ta.getFloat(R.styleable.RadarView_max_value, 0);
+        radarColor = ta.getColor(R.styleable.RadarView_radar_color, Color.GREEN);
+        textColor = ta.getColor(R.styleable.RadarView_text_color, Color.BLACK);
+        lineColor = ta.getColor(R.styleable.RadarView_line_color, 0xFF989898);
+        valueColor = ta.getColor(R.styleable.RadarView_value_color, Color.BLACK);
+        textSize = ta.getDimension(R.styleable.RadarView_text_size, 0);
+        isFullRadar = ta.getBoolean(R.styleable.RadarView_is_full_radar, false);
         radarPaint = new Paint();
-        radarPaint.setStyle(Paint.Style.FILL);
-        radarPaint.setColor(Color.GREEN);
-
         textPaint = new Paint();
-        textPaint.setAntiAlias(true);
-        textPaint.setTextSize(48);
-        textPaint.setColor(Color.BLACK);
-        textPaint.setStyle(Paint.Style.STROKE);
-
         linePaint = new Paint();
-        linePaint.setStyle(Paint.Style.STROKE);
-        linePaint.setColor(0xFF989898);
-
         valuePaint = new Paint();
-        valuePaint.setColor(Color.BLACK);
-        valuePaint.setStyle(Paint.Style.STROKE);
-        valuePaint.setStrokeWidth(5);
+        ta.recycle();
     }
 
 
@@ -82,6 +82,21 @@ public class RadarView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (isFullRadar) {
+            radarPaint.setStyle(Paint.Style.FILL);
+        } else {
+            radarPaint.setStyle(Paint.Style.STROKE);
+        }
+        radarPaint.setColor(radarColor);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(textSize);
+        textPaint.setColor(textColor);
+        textPaint.setStyle(Paint.Style.STROKE);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setColor(lineColor);
+        valuePaint.setColor(valueColor);
+        valuePaint.setStyle(Paint.Style.STROKE);
+        valuePaint.setStrokeWidth(5);
         drawPolygon(canvas);
         drawText(canvas);
         drawLines(canvas);
@@ -103,7 +118,9 @@ public class RadarView extends View {
                     path.lineTo(x, y);
                 }
             }
-            radarPaint.setColor(colors[i - 1]);
+            if (i > 0 && i <= colors.length) {
+                radarPaint.setColor(colors[i - 1]);
+            }
             path.close();
             canvas.drawPath(path, radarPaint);
         }
@@ -113,8 +130,7 @@ public class RadarView extends View {
         double curAngle = 0;
         Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
         float fontHeight = fontMetrics.descent - fontMetrics.ascent; //文字的高度
-        //修正标题
-        for (int i = 0; i < countAngle; i++) {
+        for (int i = 0; i < titles.length; i++) {
             float dis = textPaint.measureText(titles[i]);//获取文本长度
             int textRedius = (int) Math.sqrt(dis * dis + fontHeight * fontHeight) / 2;
             curAngle = beginAngle + angle * i;
@@ -142,8 +158,8 @@ public class RadarView extends View {
     private void drawRegion(Canvas canvas) {
         Path path = new Path();
         valuePaint.setAlpha(127);
-        for (int i = 0; i < countAngle; i++) {
-            double percent = data[i] / maxValue;
+        for (int i = 0; i < datas.length; i++) {
+            double percent = datas[i] / maxValue;
             float x = (float) (centerX + radius * Math.cos(beginAngle + angle * i) * percent);
             float y = (float) (centerY + radius * Math.sin(beginAngle + angle * i) * percent);
             if (i == 0) {
@@ -156,4 +172,19 @@ public class RadarView extends View {
         canvas.drawPath(path, valuePaint);
     }
 
+    public void setTitles(String[] titles) {
+        this.titles = titles;
+    }
+
+    public void setDatas(double[] datas) {
+        this.datas = datas;
+    }
+
+    public void setBeginAngle(double beginAngle) {
+        this.beginAngle = beginAngle;
+    }
+
+    public void setColors(int[] colors) {
+        this.colors = colors;
+    }
 }
